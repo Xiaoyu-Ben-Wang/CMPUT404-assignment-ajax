@@ -11,5 +11,14 @@ Contributors / Licensing
 ========================
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
+Additions to the project is LICENSE'D under the Apache 2 license by Xiaoyu Wang.
+
+
+Sources Used
+============
+* https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+* https://flask.palletsprojects.com/en/2.0.x/api/
 
 
