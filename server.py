@@ -22,10 +22,9 @@
 
 
 import flask
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, send_from_directory
 import json
 
-from werkzeug.utils import redirect
 app = Flask(__name__)
 app.debug = True
 
@@ -43,18 +42,34 @@ class World:
         entry = self.space.get(entity,dict())
         entry[key] = value
         self.space[entity] = entry
+        self.notify_all(entity, entry)
 
     def set(self, entity, data):
         self.space[entity] = data
+        self.notify_all(entity, data)
 
     def clear(self):
         self.space = dict()
+        self.listeners = dict()
 
     def get(self, entity):
         return self.space.get(entity,dict())
 
     def world(self):
         return self.space
+
+    def notify_all(self, entity, data):
+        for listener in self.listeners.keys():
+            self.listeners[listener][entity] = data
+
+    def add_listener(self, listener_name):
+        self.listeners[listener_name] = dict()
+
+    def get_listener(self, listener_name):
+        return self.listeners[listener_name]
+
+    def clear_listener(self, listener_name):
+        self.listeners[listener_name] = dict()
 
 # you can test your webservice from the commandline
 # curl -v   -H "Content-Type: application/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}'
@@ -76,7 +91,7 @@ def flask_post_json():
 @app.route("/")
 def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
-    return redirect("static/index.html")
+    return redirect("./static/index.html")
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
@@ -88,8 +103,6 @@ def update(entity):
         return jsonify(myWorld.get(entity))
     except Exception:
         return "Error", 400
-
-
 
 @app.route("/world", methods=['POST','GET'])
 def world():
@@ -108,5 +121,20 @@ def clear():
     myWorld.clear()
     return jsonify(myWorld.world())
 
+@app.route("/listener/<entity>", methods=['POST', 'PUT'])
+def add_listener(entity):
+    myWorld.add_listener(entity)
+    return jsonify(dict())
+
+@app.route("/listener/<entity>")
+def get_listener(entity):
+    listener_data = myWorld.get_listener(entity)
+    myWorld.clear_listener(entity)
+    return jsonify(listener_data)
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('js', path)
+
 if __name__ == "__main__":
-    app.run()
+    app.run(threaded = True)
