@@ -101,18 +101,6 @@ function sendJSONXMLHTTPRequestGET(url, callback) {
     xhr.send();
 }
 
-const listenForUpdates = (url) => {
-    const requestArgs = {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json'
-        }
-    }
-    fetch(url, requestArgs)
-        .then((response) => response.json())
-        .then((objects) => updateWorld(objects));
-}
-
 
 var world = {};
 
@@ -342,6 +330,19 @@ const updateWorld = (objs) => {
     drawNextFrame();
 }
 
+const listenForUpdates = (url) => {
+    const requestArgs = {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    }
+    fetch(url, requestArgs)
+        .then((response) => response.json())
+        .then((objects) => updateWorld(objects));
+}
+
+
 const setWorld = (newWorld) => {
     world = newWorld;
     drawNextFrame();
@@ -349,11 +350,11 @@ const setWorld = (newWorld) => {
 
 var unique_id = Math.floor(100000000*Math.random()).toString();
 function update() {
-    //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
     drawFrame();
 }
 
 function beginListening() {
+    //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
     listenForUpdates(`../listener/${unique_id}`);
 }
 
